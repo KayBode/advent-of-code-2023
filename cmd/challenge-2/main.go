@@ -29,9 +29,6 @@ func main() {
 
 func run() error {
 	fPath := flag.String("path", "", "Filepath for input")
-	red := flag.Int("red", 1, "Amount of red balls in bag")
-	blue := flag.Int("blue", 1, "Amount of blue balls in bag")
-	green := flag.Int("green", 1, "Amount of green balls in bag")
 	flag.Parse()
 
 	lines, err := adventparser.GetLines(*fPath)
@@ -46,10 +43,9 @@ func run() error {
 			return err
 		}
 
-		isPossible := checkGame(g, *red, *blue, *green)
-		if isPossible {
-			result = result + g.id
-		}
+		red, blue, green := getLowestNeededColorCount(g)
+
+		result = result + red*blue*green
 	}
 
 	_, _ = fmt.Fprintf(os.Stdout, "Result is: %d\n", result)
@@ -92,6 +88,27 @@ func createGameFromLine(line string) (game, error) {
 	}
 
 	return g, nil
+}
+
+func getLowestNeededColorCount(g game) (red int, blue int, green int) {
+	for _, cCount := range g.colorCounts {
+		switch cCount.color {
+		case "red":
+			if cCount.count > red {
+				red = cCount.count
+			}
+		case "blue":
+			if cCount.count > blue {
+				blue = cCount.count
+			}
+		case "green":
+			if cCount.count > green {
+				green = cCount.count
+			}
+		}
+	}
+
+	return red, blue, green
 }
 
 func checkGame(g game, red int, blue int, green int) bool {
