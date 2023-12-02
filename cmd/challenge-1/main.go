@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bufio"
+	"advent-of-code-2023/internal/adventparser"
 	"errors"
 	"flag"
 	"fmt"
@@ -21,7 +21,7 @@ func run() error {
 	fPath := flag.String("path", "", "Filepath for input")
 	flag.Parse()
 
-	lines, err := getInput(*fPath)
+	lines, err := adventparser.GetLines(*fPath)
 	if err != nil {
 		return err
 	}
@@ -105,25 +105,4 @@ func findLastNumber(line string) (string, error) {
 	}
 
 	return "", errors.New("no number found in line")
-}
-
-func getInput(path string) ([]string, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return make([]string, 0), err
-	}
-	defer func(f *os.File) {
-		err = f.Close()
-		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "error on closing file %s", err)
-		}
-	}(f)
-
-	result := make([]string, 0)
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		result = append(result, scanner.Text())
-	}
-
-	return result, nil
 }
